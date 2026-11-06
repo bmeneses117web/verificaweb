@@ -84,6 +84,19 @@ footer{text-align:center;padding:25px;background:#111c30;color:#94a3b8}
 <p>La prevención digital es responsabilidad de todos.</p>
 </footer>
 
+
+<section id="verificador">
+<h2>🔎 Verificador de enlaces</h2>
+<p>Pega aquí el enlace que recibiste para revisar algunas señales comunes de riesgo.</p>
+<div class="card" style="max-width:760px">
+<label for="urlInput" style="display:block;margin-bottom:10px;font-weight:bold">Enlace que quieres analizar</label>
+<input id="urlInput" type="url" inputmode="url" placeholder="https://ejemplo.com" style="width:100%;padding:14px;border-radius:8px;border:1px solid #64748b;background:#0b1220;color:#fff;font-size:16px">
+<button id="analyzeBtn" class="btn" type="button" style="border:0;cursor:pointer">Analizar enlace</button>
+<div id="urlResult" aria-live="polite" style="margin-top:18px;color:#cbd5e1;line-height:1.6"></div>
+<p style="font-size:13px;color:#94a3b8">El análisis básico se realiza en tu navegador. No pegues enlaces que contengan códigos privados, tokens de acceso o información personal.</p>
+</div>
+</section>
+
 <script>
 (function(){
  const input=document.getElementById('urlInput');
