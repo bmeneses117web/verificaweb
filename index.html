@@ -32,6 +32,7 @@ footer{text-align:center;padding:25px;background:#111c30;color:#94a3b8}
 <a href="#inicio">Inicio</a>
 <a href="#amenazas">Amenazas</a>
 <a href="#proteccion">Protección</a>
+<a href="#verificador">Verificar enlaces</a>
 </nav>
 </header>
 
@@ -82,5 +83,62 @@ footer{text-align:center;padding:25px;background:#111c30;color:#94a3b8}
 <p>© 2026 VerificaWeb | Proyecto académico de ciberseguridad</p>
 <p>La prevención digital es responsabilidad de todos.</p>
 </footer>
+
+<script>
+(function(){
+ const input=document.getElementById('urlInput');
+ const button=document.getElementById('analyzeBtn');
+ const output=document.getElementById('urlResult');
+ if(!input||!button||!output)return;
+ button.addEventListener('click',function(){
+  const raw=input.value.trim();
+  output.textContent='';
+  if(!raw){
+   output.textContent='Escribe o pega un enlace para comenzar.';
+   return;
+  }
+  let url;
+  try{
+   url=new URL(/^https?:\/\//i.test(raw)?raw:'https://'+raw);
+  }catch(e){
+   output.textContent='No pudimos reconocer una dirección web válida. Revisa lo que escribiste.';
+   return;
+  }
+  if(!['http:','https:'].includes(url.protocol)){
+   output.textContent='Protocolo no permitido. Usa una dirección que comience por http:// o https://.';
+   return;
+  }
+  const host=url.hostname.toLowerCase();
+  const checks=[];
+  let risk=0;
+  if(url.protocol!=='https:'){checks.push('La conexión no usa HTTPS.');risk++;}
+  if(host.startsWith('xn--')||host.split('.').some(part=>part.startsWith('xn--'))){checks.push('El dominio usa caracteres codificados que podrían ocultar una suplantación.');risk++;}
+  if(/^\d{1,3}(\.\d{1,3}){3}$/.test(host)){checks.push('La dirección usa una IP en lugar de un nombre de dominio.');risk++;}
+  if(host.length>45){checks.push('El nombre del dominio es inusualmente largo.');risk++;}
+  if((url.username||url.password)){checks.push('La dirección contiene datos de usuario o contraseña.');risk++;}
+  if(/login|verify|secure|account|password|wallet|bank|update|bonus|premio|soporte/i.test(url.href)){checks.push('La dirección contiene palabras que aparecen con frecuencia en enlaces de engaño. Esto no demuestra que sea maliciosa.');risk++;}
+  if(/bit\.ly|tinyurl\.com|t\.co|ow\.ly|is\.gd|cutt\.ly/i.test(host)){checks.push('Es un enlace acortado: no permite ver claramente el destino final.');risk++;}
+  const result=document.createElement('div');
+  const heading=document.createElement('h3');
+  heading.textContent=risk===0?'No detectamos señales comunes de riesgo':risk<3?'Precaución: encontramos señales para revisar':'Riesgo potencial: encontramos varias señales sospechosas';
+  heading.style.color=risk===0?'#86efac':risk<3?'#fcd34d':'#fca5a5';
+  result.appendChild(heading);
+  const domain=document.createElement('p');
+  domain.textContent='Dominio analizado: '+host;
+  result.appendChild(domain);
+  const list=document.createElement('ul');
+  if(checks.length){
+   checks.forEach(function(item){const li=document.createElement('li');li.textContent=item;list.appendChild(li);});
+  }else{
+   const li=document.createElement('li');li.textContent='No encontramos las señales básicas incluidas en esta primera versión.';list.appendChild(li);
+  }
+  result.appendChild(list);
+  const note=document.createElement('p');
+  note.textContent='Este es un análisis preliminar, no una certificación de seguridad. Un enlace puede ser peligroso aunque no aparezcan alertas. No ingreses contraseñas ni datos bancarios si tienes dudas.';
+  result.appendChild(note);
+  output.appendChild(result);
+ });
+})();
+</script>
 </body>
 </html>
